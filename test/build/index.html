@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Тест на доминирующие архетипы</title>
+    <style>
+      :root {
+        --bg: #f2f3f5;
+        --card-bg: #ffffff;
+        --text: #17181a;
+        --text-secondary: #818c99;
+        --accent: #3f8ae0;
+        --accent-text: #ffffff;
+        --secondary-btn-bg: #eef0f3;
+        --secondary-btn-text: #17181a;
+        --border: #e4e6eb;
+        --progress-track: #e4e6eb;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f0f0f;
+          --card-bg: #1c1c1e;
+          --text: #ffffff;
+          --text-secondary: #98999e;
+          --accent: #3f8ae0;
+          --accent-text: #ffffff;
+          --secondary-btn-bg: #2c2c2e;
+          --secondary-btn-text: #ffffff;
+          --border: #2c2c2e;
+          --progress-track: #2c2c2e;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f0f0f;
+        --card-bg: #1c1c1e;
+        --text: #ffffff;
+        --text-secondary: #98999e;
+        --accent: #3f8ae0;
+        --accent-text: #ffffff;
+        --secondary-btn-bg: #2c2c2e;
+        --secondary-btn-text: #ffffff;
+        --border: #2c2c2e;
+        --progress-track: #2c2c2e;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        min-height: 100%;
+        display: flex;
+        justify-content: center;
+      }
+      .app {
+        width: 100%;
+        max-width: 480px;
+        padding: 20px 16px 40px;
+      }
+      .header {
+        font-size: 20px;
+        font-weight: 600;
+        text-align: center;
+        padding: 12px 0 20px;
+      }
+      .card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .placeholder {
+        text-align: center;
+        padding: 20px 8px 8px;
+      }
+      .placeholder .icon {
+        font-size: 56px;
+        margin-bottom: 12px;
+      }
+      .placeholder h2 {
+        font-size: 20px;
+        margin: 0 0 10px;
+      }
+      .placeholder p {
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin: 0;
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        padding: 14px 16px;
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 10px;
+        cursor: pointer;
+        text-align: center;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: var(--accent-text);
+      }
+      .btn-secondary {
+        background: var(--secondary-btn-bg);
+        color: var(--secondary-btn-text);
+      }
+      .btn-tertiary {
+        background: transparent;
+        color: var(--accent);
+      }
+      .progress-track {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: var(--progress-track);
+        overflow: hidden;
+        margin: 6px 0 4px;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+      }
+      .q-label {
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+      .q-text {
+        font-size: 19px;
+        line-height: 1.4;
+        padding: 14px 0 22px;
+      }
+      .spinner {
+        width: 44px;
+        height: 44px;
+        margin: 0 auto 16px;
+        border: 4px solid var(--progress-track);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .section-title {
+        font-size: 13px;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        margin: 22px 0 10px 2px;
+      }
+      .arch-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .arch-row:last-child {
+        border-bottom: none;
+      }
+      .arch-emoji {
+        font-size: 26px;
+      }
+      .arch-name {
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+      .arch-desc {
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      .quad-title {
+        font-weight: 600;
+        margin: 2px 0 6px;
+      }
+      .quad-sub {
+        color: var(--text-secondary);
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+      .quad-row {
+        padding: 10px 0;
+      }
+      .quad-row-top {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app" id="app"></div>
+     <script>
+      /* ==========================================================================
+         ОБНОВЛЕННЫЕ ДАННЫЕ: 32 РАЗВЕРНУТЫХ ВОПРОСА ТЕСТА
+         ========================================================================== */
+ 
+      const QUESTIONS = [
+        /*1*/ 'Мне жизненно необходимо поддерживать порядок, стабильность и предсказуемость в своей повседневной жизни.',
+        /*2*/ 'Я часто ловлю себя на мысли, что хочу систематизировать хаос вокруг и создать четкие правила игры.',
+        /*3*/ 'Для меня крайне важно чувствовать себя частью сплоченного коллектива, семьи или команды единомышленников.',
+        /*4*/ 'Я искренне ценю простые человеческие связи, равенство и доступность в общении без лишнего пафоса.',
+        /*5*/ 'Мой внутренний мир, личная независимость и свобода выбора для меня важнее, чем социальные условности или одобрение толпы.',
+        /*6*/ 'Я постоянно стремлюсь к духовному росту, самопознанию и поиску своего истинного предназначения.',
+        /*7*/ 'Я искренне верю, что мир в своей основе безопасен и прекрасен, и всегда сохраняю оптимизм и надежду на лучшее.',
+        /*8*/ 'В любой ситуации я стараюсь сохранять чуткость, веру в людей и детскую способность радоваться мелочам.',
+        /*9*/ 'Главный способ для меня разобраться в жизни — это постоянное обучение, чтение, поиск объективных фактов и глубокий анализ.',
+        /*10*/ 'Я ценю экспертность, логику и законы мироздания; мне важно докопаться до сути любого явления.',
+        /*11*/ 'Меня манят новые, неизведанные места, оригинальные идеи и смена обстановки; я задыхаюсь в рутине.',
+        /*12*/ 'Я готов пойти на одиночное путешествие или поменять всю жизнь ради того, чтобы оставаться верным самому себе.',
+        /*13*/ 'Я легко иду на оправданный риск и считаю, что ради создания лучшего будущего иногда нужно безжалостно разрушить старое.',
+        /*14*/ 'Если какая-то система или правило устарели и мешают развитию, их нужно решительно и радикально сломать.',
+        /*15*/ 'Я верю в существование скрытых взаимосвязей и в способность менять реальность силой своего настроя.',
+        /*16*/ 'Меня часто называют человеком, способным запускать глубокие внутренние или внешние трансформации в людях и процессах.',
+        /*17*/ 'У меня есть непреодолимая потребность создавать уникальные вещи, запускать креативные проекты или воплощать идеи в осязаемую форму.',
+        /*18*/ 'Я высоко ценю способность быть собой и придумывать новое и ценное.',
+        /*19*/ 'Я чувствую глубокую внутреннюю потребность искренне заботиться о людях и оберегать их.',
+        /*20*/ 'Я часто ставлю интересы, безопасность и комфорт своих близких или подопечных выше собственных нужд.',
+        /*21*/ 'Я совершенно не боюсь здоровой конкуренции, умею жестко отстаивать свои личные границы и уверенно идти к победе.',
+        /*22*/ 'В сложные моменты я готов проявить мужество, взять удар на себя и защитить те принципы, в которые верю.',
+        /*23*/ 'Я ориентирован на построение глубоких, страстных и эмоционально наполненных отношений с близкими людьми.',
+        /*24*/ 'Для меня важна эстетика, красота, чувственный опыт и умение окружать себя тем, что вызывает искреннее восхищение.',
+        /*25*/ 'Я стараюсь жить легко, спонтанно и наполнять каждый день радостью, игрой и весельем.',
+        /*26*/ 'Хороший юмор и умение не принимать происходящее слишком всерьез — это мой главный инструмент преодоления кризисов.',
+        /*27*/ 'Я стремлюсь вернуться к естественной простоте и жить в абсолютной гармонии с собой.',
+        /*28*/ 'Я трачу много времени на размышления над глобальными вопросами и поиск объективной истины.',
+        /*29*/ 'Моя главная жизненная стратегия — это непрекращающийся поиск новых горизонтов и личной свободы.',
+        /*30*/ 'Я чувствую в себе силы преодолеть любые препятствия и доказать миру, на что я по-настоящему способен.',
+        /*31*/ 'Меня вдохновляет дух революции, независимости и полного освобождения от чужих ожиданий.',
+        /*32*/ 'Я умею вдохновлять людей, менять их состояние и видеть знаки судьбы там, где другие видят случайность.',
+        /*33.*/ 'Я готов долго и кропотливо доводить свою идею до совершенства, даже если это требует множества переделок.',
+      /*34.*/ 'Я испытываю почти непреодолимое желание вмешаться и помочь, когда вижу, что кто-то рядом страдает или не справляется.',
+      /*35.*/ 'Мне важно держать ситуацию под контролем и нести полную ответственность за результат, а не полагаться на волю случая.',
+      /*36.*/ 'Мне важно оставаться простым и понятным человеком, к которому легко подойти.',
+      /*37.*/ 'Для меня очень важно чувствовать себя желанным и любимым, и я готов вкладывать много сил, чтобы поддерживать искру в отношениях.',
+      /*38.*/ 'Я обожаю разряжать напряжённую обстановку шуткой и с трудом выношу занудство, чрезмерную серьёзность и скучные правила.',
+      ];
+ 
+      var ANSWER_OPTIONS = [
+        {label:"Полностью согласен", score:3},
+        {label:"Отчасти согласен / Бывает по-разному", score:2},
+        {label:"Не согласен", score:1}
+      ];
+ 
+      var ARCHETYPE_INFO = {
+        seeker:{name:"Искатель",emoji:"🧭",desc:"Стремится к свободе, новым горизонтам и подлинному опыту."},
+        sage:{name:"Мудрец",emoji:"📚",desc:"Ищет истину через знания и анализ."},
+        innocent:{name:"Ребенок",emoji:"🌈",desc:"Идет в мир с открытым сердцем, верит в добро."},
+        creator:{name:"Творец",emoji:"🎨",desc:"Создаёт новое и уникальное, ценит самовыражение."},
+        magician:{name:"Маг",emoji:"✨",desc:"Создает новое через трансформацию и интуицию."},
+        outlaw:{name:"Бунтарь",emoji:"🔥",desc:"Бросает вызов правилам и старым системам."},
+        ruler:{name:"Правитель",emoji:"👑",desc:"Стремится к порядку, контролю и стабильности."},
+        caregiver:{name:"Опекун",emoji:"🤲",desc:"Заботится о других, часто ставя их нужды выше своих."},
+        everyman:{name:"Славный малый",emoji:"🤝",desc:"Ценит принадлежность к группе и равенство."},
+        hero:{name:"Герой",emoji:"⚔️",desc:"Стремится к победе, не боится конкуренции."},
+        lover:{name:"Любовник",emoji:"💞",desc:"Ищет близость, страсть и эмоциональную связь."},
+        jester:{name:"Шут",emoji:"🎭",desc:"Живёт легко и спонтанно, ценит юмор."}
+      };
+ 
+      var QUADRANT_INFO = {
+        ego:     {name:"Создатели",     emoji:"⚔️", desc:"Стремится оставить свой след в мире через действие и влияние.</br> Проверьте себя: ''"},
+        order:   {name:"Хранители", emoji:"🏛️", desc:"Стремится обеспечить структуру, стабильность и заботу."},
+        social:  {name:"Проводники", emoji:"❤️", desc:"Стремится к близости, принадлежности и равенству."},
+        freedom: {name:"Исследователи", emoji:"🧭", desc:"Стремится к независимости, смыслу и подлинному опыту."}
+      };
+ 
+      // ИСПРАВЛЕНО: new Array(16) -> new Array(QUESTIONS.length)
+      var state = { screen:"home", qIndex:0, answers:new Array(QUESTIONS.length).fill(0), results:null };
+ 
+      function calculateResults(answers) {
+        const getAnswer = (questionNumber) => answers[questionNumber - 1];
+ 
+        // 1. Расчет архетипов (Максимум: 9 баллов при сумме 3-х вопросов)
+const seekerScore    = getAnswer(11) + getAnswer(12) + getAnswer(29);
+const sageScore      = getAnswer(9)  + getAnswer(10) + getAnswer(28);
+const innocentScore  = getAnswer(7)  + getAnswer(8)  + getAnswer(27);
+const creatorScore   = getAnswer(17) + getAnswer(18) + getAnswer(33);
+const magicianScore  = getAnswer(15) + getAnswer(16) + getAnswer(32);
+const outlawScore    = getAnswer(13) + getAnswer(14) + getAnswer(31);
+const caregiverScore = getAnswer(19) + getAnswer(20) + getAnswer(34);
+const heroScore      = getAnswer(21) + getAnswer(22) + getAnswer(30);
+const rulerScore     = getAnswer(1)  + getAnswer(2)  + getAnswer(35);
+const everymanScore  = getAnswer(3)  + getAnswer(4)  + getAnswer(36);
+const loverScore     = getAnswer(23) + getAnswer(24) + getAnswer(37);
+const jesterScore    = getAnswer(25) + getAnswer(26) + getAnswer(38);
+ 
+        // 2. Расчет квадрантов (считаем здесь, т.к. переменные ...Score существуют только внутри функции)
+        const quadrantScores = {
+          ego:     heroScore + magicianScore + outlawScore,
+          order:   rulerScore + caregiverScore + creatorScore,
+          social:  loverScore + jesterScore + everymanScore,
+          freedom: seekerScore + sageScore + innocentScore,
+        };
+ 
+        const archetypeScores = {
+          seeker: seekerScore, sage: sageScore, innocent: innocentScore, creator: creatorScore,
+          magician: magicianScore, outlaw: outlawScore, ruler: rulerScore, caregiver: caregiverScore,
+          everyman: everymanScore, hero: heroScore, lover: loverScore, jester: jesterScore,
+        };
+ 
+        const archetypeList = Object.keys(archetypeScores).map((key) => ({
+          key,
+          name: ARCHETYPE_INFO[key].name,
+          emoji: ARCHETYPE_INFO[key].emoji,
+          desc: ARCHETYPE_INFO[key].desc, 
+          score: Math.round(archetypeScores[key] * 10) / 10,
+        }));
+ 
+        const topArchetypes = [...archetypeList]
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 5);
+ 
+        const quadrantMax = 27; // Унифицированный максимум для всех
+ 
+        const quadrantList = Object.keys(quadrantScores).map((key) => ({
+          key,
+          name: QUADRANT_INFO[key].name,
+          emoji: QUADRANT_INFO[key].emoji,
+          desc: QUADRANT_INFO[key].desc,
+          score: quadrantScores[key],
+          max: quadrantMax,
+          percent: Math.min(100, Math.round((quadrantScores[key] / quadrantMax) * 100)),
+        }));
+ 
+        const sortedQuadrants = [...quadrantList].sort((a, b) => b.score - a.score);
+        const activeQuadrant = sortedQuadrants[0];
+        const shadowQuadrant = sortedQuadrants[sortedQuadrants.length - 1];
+ 
+        return {
+          topArchetypes,       // ИСПРАВЛЕНО: было top3
+          activeQuadrant,      // ИСПРАВЛЕНО: было active
+          shadowQuadrant,      // ИСПРАВЛЕНО: было shadow
+          allQuadrants: quadrantList, // ИСПРАВЛЕНО: было quadList
+        };
+      }
+ 
+      function render(){
+        var el = document.getElementById("app");
+        var html = "";
+ 
+        if (state.screen === "home") {
+          html += '<div class="header">Тест на архетипы</div>';
+          html += '<div class="card placeholder">';
+          html += '<div class="icon">🧭</div>';
+          html += '<h2>Твоя матрица архетипов</h2>';
+          // ИСПРАВЛЕНО: текст про 32 вопроса
+          html += '<p>Пройди тест из ' + QUESTIONS.length + ' вопросов. Узнай свои доминирующие роли, а также квадранты силы и тени, определяющие твой характер.</p>';
+          html += '</div>';
+          html += '<button class="btn btn-primary" data-action="start">Начать тест</button>';
+        }
+ 
+        if (state.screen === "quiz") {
+          var i = state.qIndex;
+          html += '<div class="header">Вопрос ' + (i+1) + ' из ' + QUESTIONS.length + '</div>';
+          html += '<div class="progress-track"><div class="progress-fill" style="width:' + Math.round(((i+1)/QUESTIONS.length)*100) + '%"></div></div>';
+          html += '<div class="card">';
+          html += '<div class="q-label">Вопрос</div>';
+          html += '<div class="q-text">' + QUESTIONS[i] + '</div>';
+          ANSWER_OPTIONS.forEach(function(opt){
+            html += '<button class="btn btn-secondary" data-action="answer" data-score="' + opt.score + '">' + opt.label + '</button>';
+          });
+          html += '</div>';
+        }
+ 
+        if (state.screen === "loading") {
+          html += '<div class="header">Анализ данных</div>';
+          html += '<div class="card placeholder">';
+          html += '<div class="spinner"></div>';
+          html += '<p>Анализируем ваш профиль и рассчитываем баланс гильдий ваших актеров (квадрантов архетипов)...</p>';
+          html += '</div>';
+        }
+ 
+        if (state.screen === "results" && state.results) {
+          var r = state.results;
+          html += '<div class="header">Твой результат</div>';
+ 
+          html += '<div class="section-title">Самые активные архетипы</div>';
+          html += '<div class="card">';
+          // ИСПРАВЛЕНО: r.top3 -> r.topArchetypes
+          r.topArchetypes.forEach(function(a){
+            html += '<div class="arch-row"><div class="arch-emoji">' + a.emoji + '</div><div><div class="arch-name">' + a.name + ' (' + a.score + ' б.)</div><div class="arch-desc">' + a.desc + '</div></div></div>';
+          });
+          html += '</div>';
+ 
+          html += '<div class="section-title">Гильдии (квадранты) архетипов</div>';
+          html += '<div class="card">';
+          html += '<div class="quad-sub">🌟 Активный квадрант</div>';
+          // ИСПРАВЛЕНО: r.active -> r.activeQuadrant
+          html += '<div class="quad-title">' + r.activeQuadrant.emoji + ' ' + r.activeQuadrant.name + '</div>';
+          html += '<div class="arch-desc" style="margin-bottom:16px">' + r.activeQuadrant.desc + '</div>';
+          html += '<div class="quad-sub">👤 Теневой квадрант</div>';
+          // ИСПРАВЛЕНО: r.shadow -> r.shadowQuadrant
+          html += '<div class="quad-title">' + r.shadowQuadrant.emoji + ' ' + r.shadowQuadrant.name + '</div>';
+          html += '<div class="arch-desc">Зона скрытого потенциала: ' + r.shadowQuadrant.desc + '</div>';
+          html += '</div>';
+ 
+          html += '<div class="section-title">Баланс квадрантов</div>';
+          html += '<div class="card">';
+          // ИСПРАВЛЕНО: r.quadList -> r.allQuadrants
+          r.allQuadrants.forEach(function(q){
+            html += '<div class="quad-row"><div class="quad-row-top"><span>' + q.emoji + ' ' + q.name + '</span><span>' + q.percent + '%</span></div>';
+            html += '<div class="progress-track"><div class="progress-fill" style="width:' + q.percent + '%"></div></div></div>';
+          });
+          html += '</div>';
+ 
+          html += '<button class="btn btn-tertiary" data-action="reset">Пройти тест заново</button>';
+        }
+ 
+        el.innerHTML = html;
+ 
+        el.querySelectorAll("[data-action]").forEach(function(btn){
+          btn.addEventListener("click", function(){
+            var action = btn.getAttribute("data-action");
+            if (action === "start") {
+              // ИСПРАВЛЕНО: new Array(16) -> new Array(QUESTIONS.length)
+              state.answers = new Array(QUESTIONS.length).fill(0);
+              state.qIndex = 0;
+              state.results = null;
+              state.screen = "quiz";
+              render();
+            } else if (action === "answer") {
+              var score = parseInt(btn.getAttribute("data-score"), 10);
+              state.answers[state.qIndex] = score;
+              if (state.qIndex < QUESTIONS.length - 1) {
+                state.qIndex += 1;
+                render();
+              } else {
+                state.screen = "loading";
+                render();
+                setTimeout(function(){
+                  state.results = calculateResults(state.answers);
+                  state.screen = "results";
+                  render();
+                }, 1500);
+              }
+            } else if (action === "reset") {
+              state.screen = "home";
+              render();
+            }
+          });
+        });
+      }
+ 
+      render();
+    </script>
+    <!-- VK Bridge: сообщает ВК, что приложение готово -->
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <script>
+      if (window.vkBridge) {
+        window.vkBridge.send("VKWebAppInit");
+      }
+    </script>
+  </body>
+</html>
