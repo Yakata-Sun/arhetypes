@@ -45,9 +45,7 @@ h1{font-size:26px;line-height:1.2;margin:8px 0 6px;text-align:center}
 .swcard{position:absolute;inset:0;border-radius:20px;overflow:hidden;background:var(--card);box-shadow:0 6px 24px rgba(0,20,60,.14);cursor:grab;touch-action:pan-y;transition:transform .3s ease,opacity .3s}
 .pic{position:absolute;inset:0;background:linear-gradient(160deg,rgba(0,119,255,.25),rgba(75,179,75,.2)) center/cover no-repeat;pointer-events:none}
 .swcard.drag{transition:none;cursor:grabbing}
-.full{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:72px 22px 24px;color:#fff;font-weight:600;font-size:18px;line-height:1.45;background:rgba(8,12,24,.64);text-shadow:0 1px 3px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s}
-.full.show{opacity:1}
-.hint{position:absolute;top:12px;max-width:47%;padding:8px 11px;border-radius:12px;font-weight:700;font-size:14px;line-height:1.2;background:var(--card);border:2px solid;box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer;transition:opacity .2s,background .2s,color .2s}
+.hint{position:absolute;top:12px;max-width:47%;padding:8px 11px;border-radius:12px;font-weight:700;font-size:13px;line-height:1.2;background:var(--card);border:2px solid;box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer;transition:opacity .2s,background .2s,color .2s}
 .hl{left:12px;color:var(--bad);border-color:var(--bad)}.hr{right:12px;color:var(--ok);border-color:var(--ok)}
 .hl.on{background:var(--bad);color:#fff}.hr.on{background:var(--ok);color:#fff}
 .qcap{margin:16px 4px 0;text-align:center;font-size:17px;line-height:1.45;font-weight:500;min-height:6em;transition:opacity .3s}
@@ -87,7 +85,6 @@ h1{font-size:26px;line-height:1.2;margin:8px 0 6px;text-align:center}
  </section>
 </div>
 <script src="creatorsDecks.js"></script>
-<script src="explorersDecks.js"></script>
 <script>
 /* ===== CONTENT ===== */
 const GUILDS=[
@@ -116,9 +113,9 @@ const questDecks={
 };
 /* ===== ПОДКЛЮЧЕНИЕ ВНЕШНИХ КОЛОД =====
    Файлы-колоды лежат отдельно (creatorsDecks.js и т.п.) и подключаются тегом <script src> выше.
-   Формат карточки во внешнем файле: {question, image (необязательно), left:{short (2 слова), text, effect}, right:{short, text, effect}}.
+   Формат карточки во внешнем файле: {question, image (необязательно, URL картинки), left:{text,effect}, right:{text,effect}}.
    Колода архетипа из внешнего файла ЗАМЕНЯЕТ тестовую карточку. Новые файлы добавляйте в список ниже. */
-const normalizeCard=c=>({text:c.question,image:c.image,left:{label:c.left.text,short:c.left.short,effects:c.left.effect},right:{label:c.right.text,short:c.right.short,effects:c.right.effect}});
+const normalizeCard=c=>({text:c.question,image:c.image,left:{label:c.left.text,effects:c.left.effect},right:{label:c.right.text,effects:c.right.effect}});
 function mergeDecks(ext){
  for(const a in ext){
   if(!questDecks[a]){console.warn('Неизвестный архетип в колоде:',a);continue}
@@ -127,8 +124,8 @@ function mergeDecks(ext){
   if(ok.length)questDecks[a]=ok.map(normalizeCard);
  }
 }
-[typeof creatorsDecks!=='undefined'?creatorsDecks:null, 
-typeof explorersDecks!=='undefined'?explorersDecks:null
+[typeof creatorsDecks!=='undefined'?creatorsDecks:null
+ // , typeof explorersDecks!=='undefined'?explorersDecks:null
 ].forEach(d=>d&&mergeDecks(d));
 const coachingQuestions={
 "Герой":["В каких сферах жизни вы проявляете избыточную борьбу там, где можно договориться?","Что для вас означает «победа» без разрушения отношений?","Какую внутреннюю ценность вы защищаете усерднее всего?"],
@@ -202,37 +199,31 @@ function nextCard(){
  if(idx>=deck.length){setTimeout(()=>go('s3',finish),300);return}
  const d=deck[idx];$('cnt').textContent='Карточка '+(idx+1)+' из '+deck.length;
  const c=document.createElement('div');c.className='swcard';
- c.innerHTML='<div class="pic"></div><div class="full"></div><div class="hint hl"></div><div class="hint hr"></div>';
- const sh=o=>o.short||o.label.split(/\s+/).slice(0,2).join(" ");
- c.querySelector(".hl").textContent=sh(d.left);c.querySelector(".hr").textContent=sh(d.right);
- if(d.image)c.querySelector('.pic').style.backgroundImage='url("'+d.image+'")';
+ c.innerHTML='<div class="pic"></div><div class="hint hl"></div><div class="hint hr"></div>';
+ c.children[1].textContent=d.left.label;c.children[2].textContent=d.right.label;
+ if(d.image)c.children[0].style.backgroundImage='url("'+d.image+'")';
  const cap=$('qcap');cap.style.opacity=0;setTimeout(()=>{cap.textContent=d.text;cap.style.opacity=1},idx?250:0);
  c.style.opacity=0;c.style.transform='scale(.94)';zone.appendChild(c);
  requestAnimationFrame(()=>requestAnimationFrame(()=>{c.style.opacity=1;c.style.transform=''}));
  attachSwipe(c,d);
 }
 function attachSwipe(c,d){
- let sx=0,dx=0,on=false,done=false;let tapSide=null;const hl=c.querySelector('.hl'),hr=c.querySelector('.hr'),full=c.querySelector('.full');let ptype='',preview=null;
- const showFull=sd=>{full.textContent=(sd==='l'?d.left:d.right).label;full.classList.add('show')};
- const hideFull=()=>{full.classList.remove('show');preview=null};
- [[hl,'l'],[hr,'r']].forEach(([el,sd])=>{el.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&!on)showFull(sd)});el.addEventListener('pointerleave',()=>{if(!on)hideFull()})});
- c.addEventListener('pointerdown',e=>{if(done)return;const h=e.target.closest('.hint');tapSide=h?(h.classList.contains('hl')?'l':'r'):null;ptype=e.pointerType;on=true;sx=e.clientX;dx=0;c.classList.add('drag');c.setPointerCapture(e.pointerId)},{passive:true});
+ let sx=0,dx=0,on=false,done=false;let tapSide=null;const hl=c.children[1],hr=c.children[2];
+ c.addEventListener('pointerdown',e=>{if(done)return;const h=e.target.closest('.hint');tapSide=h?(h.classList.contains('hl')?'l':'r'):null;on=true;sx=e.clientX;dx=0;c.classList.add('drag');c.setPointerCapture(e.pointerId)},{passive:true});
  c.addEventListener('pointermove',e=>{
   if(!on)return;dx=e.clientX-sx;
   c.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;
   const k=Math.min(Math.abs(dx)/90,1);
   hl.style.opacity=dx<0?1:1-.5*k;hr.style.opacity=dx>0?1:1-.5*k;hl.classList.toggle('on',dx<0&&k>=1);hr.classList.toggle('on',dx>0&&k>=1);
-  if(k>.35)showFull(dx<0?'l':'r');else hideFull();
  },{passive:true});
  const end=()=>{
   if(!on)return;on=false;c.classList.remove('drag');
   const tap=tapSide&&Math.abs(dx)<=6;
-  if(tap&&ptype!=='mouse'&&preview!==tapSide){showFull(tapSide);preview=tapSide;c.style.transform='';return}
   if(Math.abs(dx)>90||tap){
    done=true;const left=tap?tapSide==='l':dx<0;
    c.style.transform=`translateX(${left?-600:600}px) rotate(${left?-30:30}deg)`;c.style.opacity=0;
    applyEffects((left?d.left:d.right).effects);idx++;setTimeout(nextCard,320);
-  }else{c.style.transform='';hl.style.opacity=hr.style.opacity='';hl.classList.remove('on');hr.classList.remove('on');hideFull()}
+  }else{c.style.transform='';hl.style.opacity=hr.style.opacity='';hl.classList.remove('on');hr.classList.remove('on')}
  };
  c.addEventListener('pointerup',end,{passive:true});c.addEventListener('pointercancel',end,{passive:true});
 }
