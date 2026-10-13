@@ -5,29 +5,36 @@
 <title>Общество: Новые смыслы</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
+/* Цвета и переменные темы (светлая / тёмная) */
 :root{--bg:#f0f2f5;--card:#fff;--tx:#222;--mut:#6d7885;--ac:#0077ff;--ok:#4bb34b;--bad:#e64646;--sh:0 2px 10px rgba(0,20,60,.08);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#19191a;--card:#232324;--tx:#e1e3e6;--mut:#909499;--sh:0 2px 10px rgba(0,0,0,.4)}}
 :root[data-theme="dark"]{--bg:#19191a;--card:#232324;--tx:#e1e3e6;--mut:#909499;--sh:0 2px 10px rgba(0,0,0,.4)}
+/* Базовые стили страницы */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;background:var(--bg);color:var(--tx);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
 #app{max-width:560px;margin:0 auto;padding:20px 16px 28px}
+/* Экраны: виден один, плавное появление через opacity/transform (классы .active и .show ставит JS) */
 .screen{display:none;opacity:0;transform:translateY(12px);transition:opacity .4s,transform .4s}
 .screen.active{display:block}.screen.show{opacity:1;transform:none}
 h1{font-size:26px;line-height:1.2;margin:8px 0 6px;text-align:center}
 .sub{color:var(--mut);text-align:center;margin:0 0 18px}
+/* Сетка карточек архетипов (экран 1) */
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(min-width:480px){.grid{grid-template-columns:repeat(3,1fr)}}
-.arch{background:var(--card);border:2px solid transparent;border-radius:14px;box-shadow:var(--sh);min-height:64px;padding:12px 8px;font:600 16px inherit;font-family:inherit;color:var(--tx);cursor:pointer;transition:transform .15s,border-color .2s,background .2s}
+.arch{background:var(--card);border:2px solid transparent;border-radius:14px;box-shadow:var(--sh);min-height:64px;padding:12px 8px;font-family:inherit;font-weight:600;font-size:16px;color:var(--tx);cursor:pointer;transition:transform .15s,border-color .2s,background .2s}
 .arch:active{transform:scale(.97)}
 .arch.highlight{border-color:var(--ac);background:rgba(0,119,255,.12)}
 .arch.selected{border-color:var(--ok);background:rgba(75,179,75,.16);transform:scale(1.04)}
+/* Блоки-гильдии: цвет рамки и фона берётся из переменной --g (RGB), которую задаёт JS */
 .guild{margin-top:14px;padding:12px;border:2px solid rgba(var(--g),.55);background:rgba(var(--g),.1);border-radius:16px}
 .guild h2{font-size:16px;margin:0 0 10px}
 .guild .grid{grid-template-columns:repeat(3,1fr);gap:8px}
 .guild .arch{font-size:14px;padding:10px 4px;min-height:58px;overflow-wrap:anywhere}
-.btn{display:block;width:100%;margin-top:18px;padding:15px;border:0;border-radius:12px;background:var(--ac);color:#fff;font:600 17px inherit;font-family:inherit;cursor:pointer;transition:opacity .2s,transform .15s}
+/* Основные кнопки; .locked блокирует клики на время рулетки */
+.btn{display:block;width:100%;margin-top:18px;padding:15px;border:0;border-radius:12px;background:var(--ac);color:#fff;font-family:inherit;font-weight:600;font-size:17px;cursor:pointer;transition:opacity .2s,transform .15s}
 .btn:active{transform:scale(.98)}
 .locked .arch,.locked .btn{pointer-events:none}.locked .btn{opacity:.6}
+/* Панель шкал (экран 2): Дар и Тень в ряд (.row2), Источник ниже */
 .dash{background:var(--card);border-radius:14px;box-shadow:var(--sh);padding:14px 16px;margin-bottom:16px}
 .m+.m{margin-top:13px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -36,56 +43,87 @@ h1{font-size:26px;line-height:1.2;margin:8px 0 6px;text-align:center}
 .row2 .m b{font-size:13px;flex-wrap:wrap;gap:0 6px}
 .m b{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
 .m b span{color:var(--mut);font-weight:500}
+/* Полоса шкалы и заливка; шкала Тени краснеет и мигает при классе .alarm (значение > 70%) */
 .track{position:relative;height:10px;border-radius:5px;background:rgba(120,130,150,.22)}
 .fill{height:100%;width:0;border-radius:5px;background:var(--ac);transition:width .5s cubic-bezier(.3,.8,.3,1),background .3s}
 #mGift .fill{background:var(--ok)}
 #mShadow.alarm .fill{background:var(--bad);animation:pulse 1s infinite}
 #mShadow.alarm b{color:var(--bad)}
 @keyframes pulse{50%{opacity:.55}}
+/* Шкала «Источник»: риска центра, бегунок и подписи краёв */
 .scale .track::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--mut);opacity:.5}
 .dot{position:absolute;top:50%;left:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:var(--ac);box-shadow:0 1px 6px rgba(0,119,255,.5);transition:left .5s cubic-bezier(.3,.8,.3,1)}
 .ends{display:flex;justify-content:space-between;font-size:17px;font-weight:600;margin-top:8px}
 #mSource b{justify-content:center}
+/* Зона свайпа и сама карточка (.pic — картинка, .full — затемнение с полным текстом, .hint — кнопки выбора) */
 .zone{position:relative;height:400px;touch-action:pan-y;user-select:none}
-.swcard{position:absolute;inset:0;border-radius:20px;overflow:hidden;background:var(--card);box-shadow:0 6px 24px rgba(0,20,60,.14);cursor:grab;touch-action:pan-y;transition:transform .3s ease,opacity .3s}
+.swcard{position:absolute;inset:0;border-radius:20px;overflow:hidden;background:var(--card);box-shadow:0 6px 24px rgba(0,20,60,.14);cursor:grab;touch-action:pan-y;will-change:transform;transition:transform .3s ease,opacity .3s}
 .pic{position:absolute;inset:0;background:linear-gradient(160deg,rgba(0,119,255,.25),rgba(75,179,75,.2)) center/cover no-repeat;pointer-events:none}
 .swcard.drag{transition:none;cursor:grabbing}
+/* Затемнение с полным текстом выбора: появляется при наведении, свайпе или первом касании */
 .full{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:72px 22px 24px;color:#fff;font-weight:600;font-size:18px;line-height:1.45;background:rgba(8,12,24,.64);text-shadow:0 1px 3px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s}
 .full.show{opacity:1}
+/* Кнопки выбора сверху карточки: .hl — левая (красная), .hr — правая (зелёная); .on — «залита» после порога свайпа */
 .hint{position:absolute;top:12px;max-width:47%;padding:8px 11px;border-radius:12px;font-weight:700;font-size:14px;line-height:1.2;background:var(--card);border:2px solid;box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer;transition:opacity .2s,background .2s,color .2s}
 .hl{left:12px;color:var(--bad);border-color:var(--bad)}.hr{right:12px;color:var(--ok);border-color:var(--ok)}
 .hl.on{background:var(--bad);color:#fff}.hr.on{background:var(--ok);color:#fff}
+/* Текст ситуации над карточкой */
 .qcap{margin:0 4px 14px;text-align:center;font-size:17px;line-height:1.45;font-weight:500;min-height:6em;transition:opacity .3s}
 .cnt{text-align:center;color:var(--mut);font-size:14px;margin-top:12px}
+/* Итоговый экран (экран 3) */
 .review{background:var(--card);border-radius:14px;box-shadow:var(--sh);padding:18px;margin-bottom:14px}
 .review p{margin:0 0 10px}.review p:last-child{margin:0}
 .qs h2{font-size:18px;margin:0 0 10px}.qs ol{margin:0;padding-left:20px}.qs li{margin-bottom:10px}
+/* Экран описания архетипа: цветная полоса слева берётся из цвета гильдии (--g) */
+.hero{border-left:6px solid rgb(var(--g,0,119,255))}
+#infoGuild{margin-bottom:0}#infoName{margin-bottom:14px}
+.gt+.gt{margin-top:12px}.gt b{display:block;margin-bottom:2px}.gt p{margin:0}
+.btn.ghost{background:transparent;color:var(--ac);box-shadow:inset 0 0 0 2px var(--ac);margin-top:10px}
+/* Отключаем анимации, если пользователь просит их уменьшить */
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
+<!-- Корневой контейнер: три экрана, виден только один -->
 <div id="app">
- <section class="screen" id="s1">
+ <!-- ЭКРАН 1: выбор архетипа (гильдии строятся из JS в #guilds) -->
+<section class="screen" id="s1">
   <h1>Общество: Новые смыслы</h1>
   <p class="sub">Выберите свой архетип или доверьтесь случаю, чтобы начать путь</p>
   <button class="btn" id="rnd">Случайный выбор</button>
   <div id="guilds"></div>
  </section>
- <section class="screen" id="s2">
+ <!-- ЭКРАН-ПЕРЕХОД: описание выбранного архетипа (заполняется из JS функцией fillInfo) -->
+ <section class="screen" id="sInfo">
+  <p class="sub" id="infoGuild"></p>
+  <h1 id="infoName"></h1>
+  <div class="review hero" id="infoCard"><div id="infoDesc"></div></div>
+  <div class="review">
+   <div class="gt"><b>🌟 Дар</b><p id="infoGift"></p></div>
+   <div class="gt"><b>Ловушка</b><p id="infoShadow"></p></div>
+  </div>
+  <button class="btn" id="startBtn">Начать путь</button>
+  <button class="btn ghost" id="backBtn">Выбрать другой архетип</button>
+ </section>
+ <!-- ЭКРАН 2: локация вызова — шкалы, вопрос и карточка со свайпом -->
+<section class="screen" id="s2">
   <h1 id="t2">Локация вызова</h1>
   <p class="sub" id="path"></p>
   <div class="dash">
-   <div class="row2">
+   <!-- Дар и Тень: по половине строки -->
+<div class="row2">
    <div class="m" id="mGift"><b>🌟 Проявление Дара<span></span></b><div class="track"><div class="fill"></div></div></div>
-   <div class="m" id="mShadow"><b>🪤 Давление Тени<span></span></b><div class="track"><div class="fill"></div></div></div>
+   <div class="m" id="mShadow"><b>Ловушки архетипа<span></span></b><div class="track"><div class="fill"></div></div></div>
    </div>
-   <div class="m scale" id="mSource"><b><span></span></b><div class="track"><div class="dot"></div></div><div class="ends"><span>Общность</span><span>Независимость</span></div></div>
+   <!-- Источник: бегунок между Общностью (0%) и Независимостью (100%) -->
+<div class="m scale" id="mSource"><b><span></span></b><div class="track"><div class="dot"></div></div><div class="ends"><span>Общность</span><span>Независимость</span></div></div>
   </div>
   <p class="qcap" id="qcap"></p>
   <div class="zone" id="zone"></div>
   <div class="cnt" id="cnt"></div>
  </section>
- <section class="screen" id="s3">
+ <!-- ЭКРАН 3: итог и вопросы для саморефлексии -->
+<section class="screen" id="s3">
   <h1>Локация сборки 🧩</h1>
   <p class="sub">Ваш уникальный срез личности и интеграция опыта</p>
   <div class="review" id="rev"></div>
@@ -93,41 +131,55 @@ h1{font-size:26px;line-height:1.2;margin:8px 0 6px;text-align:center}
   <button class="btn" id="again">Пройти заново</button>
  </section>
 </div>
+<!-- VK Bridge: связь мини-приложения с клиентом ВКонтакте (официальная сборка для браузера) -->
+<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+<!-- Файлы с колодами карточек. У каждого своя переменная (creatorsDecks, ...), её читает блок «ПОДКЛЮЧЕНИЕ КОЛОД» ниже -->
 <script src="creatorsDecks.js"></script>
 <script src="explorersDecks.js"></script>
 <script src="keepersDecks.js"></script>
 <script src="guidesDecks.js"></script>
+<!-- Движок игры -->
 <script>
-/* ===== CONTENT ===== */
+/* ===================== VK BRIDGE =====================
+   Сообщаем клиенту ВКонтакте, что приложение загрузилось (без VKWebAppInit мини-приложение может не открыться).
+   Вне ВК (обычный браузер) или если библиотека не загрузилась, блок просто пропускается, и игра работает как раньше. */
+if(typeof vkBridge!=='undefined'){
+ // Тема оформления: ВК присылает схему в событии VKWebAppUpdateConfig; ставим data-theme, и срабатывают наши CSS-переменные
+ vkBridge.subscribe(e=>{
+  const ev=e&&e.detail;
+  if(ev&&ev.type==='VKWebAppUpdateConfig'&&ev.data&&ev.data.scheme){
+   const dark=['space_gray','vkcom_dark'].includes(ev.data.scheme);
+   document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+  }
+ });
+ vkBridge.send('VKWebAppInit').catch(err=>console.warn('VK Bridge:',err));
+}
+
+/* ===================== ДАННЫЕ ===================== */
+// Гильдии: название, цвет (RGB для рамки/фона) и список архетипов. Названия архетипов должны совпадать с ключами в файлах колод.
 const GUILDS=[
 {name:"🧭 Гильдия Исследователей",rgb:"92,107,230",list:["Простодушный","Искатель","Мудрец"]},
 {name:"✨ Гильдия Создателей",rgb:"245,158,11",list:["Герой","Бунтарь","Маг"]},
 {name:"🛠 Гильдия Хранителей",rgb:"16,185,129",list:["Творец","Правитель","Заботливый"]},
 {name:"❤️ Гильдия Проводников",rgb:"236,72,153",list:["Славный малый","Влюбленный","Шут"]}];
+// Плоский список архетипов в порядке гильдий (по нему крутится рулетка)
 const ARCH=GUILDS.flatMap(g=>g.list);
-// effects: gift (Дар), shadow (Тень), source (Источник: 0 = Общность, 100 = Независимость)
-const fx=(gift,shadow,source)=>({gift,shadow,source});
-const card=(text,l,lf,r,rf)=>({text,left:{label:l,effects:lf},right:{label:r,effects:rf}});
-// Добавляйте новые карточки в массивы ниже через card(...) или обычным объектом.
-const questDecks={
-"Герой":[card("Спор в общине перерастает в ссору. Вы можете победить силой аргументов.","Настоять на своём",fx(5,15,10),"Искать компромисс",fx(10,-5,-10))],
-"Бунтарь":[card("Правило, которое все соблюдают, кажется вам бессмысленным.","Открыто нарушить",fx(5,15,15),"Предложить изменить",fx(10,-5,-5))],
-"Маг":[card("Вы видите способ изменить ситуацию, но о нём никто не просил.","Действовать тихо",fx(5,15,10),"Рассказать всем",fx(10,-5,-10))],
-"Славный малый":[card("Друг просит поддержать решение, с которым вы не согласны.","Поддержать молча",fx(-5,10,-15),"Сказать честно",fx(10,-5,10))],
-"Влюбленный":[card("Близкий человек просит вас отказаться от важной мечты.","Уступить",fx(-5,10,-20),"Отстоять мечту",fx(10,5,15))],
-"Шут":[card("На собрании повисла тяжёлая тишина. Шутка разрядит её, но может задеть.","Пошутить",fx(5,10,5),"Промолчать",fx(5,-5,-5))],
-"Заботливый":[card("Вы устали, но вас просят помочь ещё раз.","Помочь снова",fx(-5,15,-15),"Отдохнуть",fx(10,-5,15))],
-"Творец":[card("Ваша идея не совпадает с ожиданиями заказчика.","Следовать видению",fx(10,5,15),"Подстроиться",fx(-5,10,-10))],
-"Правитель":[card("Группе нужно срочное решение, а мнения разделились.","Решить единолично",fx(5,15,15),"Собрать совет",fx(10,-5,-15))],
-"Простодушный":[card("Незнакомец просит доверить ему важное дело.","Довериться",fx(5,5,-10),"Проверить",fx(10,-5,5))],
-"Искатель":[card("Вам предлагают остаться в уютном месте или отправиться в неизвестность.","Отправиться",fx(10,5,15),"Остаться",fx(5,-5,-10))],
-"Мудрец":[card("У вас просят совет, но человеку важнее быть услышанным.","Дать совет",fx(5,10,5),"Просто выслушать",fx(10,-10,-10))]
-};
-/* ===== ПОДКЛЮЧЕНИЕ ВНЕШНИХ КОЛОД =====
-   Файлы-колоды лежат отдельно (creatorsDecks.js и т.п.) и подключаются тегом <script src> выше.
-   Формат карточки во внешнем файле: {question, image (необязательно), left:{short (2 слова), text, effect}, right:{short, text, effect}}.
-   Колода архетипа из внешнего файла ЗАМЕНЯЕТ тестовую карточку. Новые файлы добавляйте в список ниже. */
-const normalizeCard=c=>({text:c.question,image:c.image,left:{label:c.left.text,short:c.left.short,effects:c.left.effect},right:{label:c.right.text,short:c.right.short,effects:c.right.effect}});
+/* ===================== ПОДКЛЮЧЕНИЕ КОЛОД =====================
+   Карточки лежат в отдельных файлах (creatorsDecks.js и т. д.). Формат карточки во внешнем файле:
+   { question, image (необязательно), left:{short (2 слова), text, effect}, right:{...} }
+   effect = { gift, shadow, source } — на сколько пунктов сдвинуть шкалы. Для source минус — к Общности, плюс — к Независимости. */
+
+// Колоды по архетипам; сначала пустые, дальше заполняются из файлов
+const questDecks=Object.fromEntries(ARCH.map(a=>[a,[]]));
+
+// Приводит карточку из файла к внутреннему виду движка
+const normalizeCard=c=>({
+ text:c.question, image:c.image,
+ left:{label:c.left.text,short:c.left.short,effects:c.left.effect},
+ right:{label:c.right.text,short:c.right.short,effects:c.right.effect}
+});
+
+// Кладёт колоды из одного файла в questDecks; битые карточки пропускает, в консоль пишет предупреждение
 function mergeDecks(ext){
  for(const a in ext){
   if(!questDecks[a]){console.warn('Неизвестный архетип в колоде:',a);continue}
@@ -136,11 +188,16 @@ function mergeDecks(ext){
   if(ok.length)questDecks[a]=ok.map(normalizeCard);
  }
 }
-[typeof creatorsDecks!=='undefined'?creatorsDecks:null, 
-typeof explorersDecks!=='undefined'?explorersDecks:null,
-typeof keepersDecks!=='undefined'?keepersDecks:null,
-typeof guidesDecks!=='undefined'?guidesDecks:null
-].forEach(d=>d&&mergeDecks(d));
+
+// Список файлов-колод. typeof защищает от ошибки, если файл не загрузился. Новый файл — новая строка здесь и тег <script src> выше.
+[
+ ['creatorsDecks',typeof creatorsDecks!=='undefined'?creatorsDecks:null],
+ ['explorersDecks',typeof explorersDecks!=='undefined'?explorersDecks:null],
+ ['keepersDecks',typeof keepersDecks!=='undefined'?keepersDecks:null],
+ ['guidesDecks',typeof guidesDecks!=='undefined'?guidesDecks:null]
+].forEach(([name,d])=>d?mergeDecks(d):console.warn('Файл колоды не загружен:',name));
+
+// Вопросы для саморефлексии на итоговом экране: по три на каждый архетип
 const coachingQuestions={
 "Герой":["В каких сферах жизни вы проявляете избыточную борьбу там, где можно договориться?","Что для вас означает «победа» без разрушения отношений?","Какую внутреннюю ценность вы защищаете усерднее всего?"],
 "Бунтарь":["Что в вашей жизни действительно требует перемен, а что вы отвергаете по привычке?","Какую свободу вы ищете и от чего именно?","Как превратить протест в созидательное действие?"],
@@ -155,100 +212,279 @@ const coachingQuestions={
 "Искатель":["Каких новых горизонтов или знаний ищет ваша душа в данный момент?","Что мешает вам остановиться и насладиться текущим моментом?","Какое внутреннее пространство вы сейчас исследуете?"],
 "Мудрец":["Как накопленный вами опыт и знания могут послужить обществу прямо сейчас?","В чем вы ищете глубинный смысл, упуская простые радости?","Какая истина освобождает вас от внутренних сомнений?"]};
 
-/* ===== STATE & HELPERS ===== */
-const $=id=>document.getElementById(id);
-const clamp=v=>Math.max(0,Math.min(100,v));
-const START={gift:50,shadow:20,source:50};
-let arch=null,idx=0,state={...START},busy=false;
+/* ===================== СОСТОЯНИЕ И ХЕЛПЕРЫ ===================== */
+const $=id=>document.getElementById(id);            // короткий доступ к элементу по id
+const clamp=v=>Math.max(0,Math.min(100,v));         // держит значение шкалы в пределах 0–100 (игра не «проигрывается»)
+const START={gift:50,shadow:20,source:50};          // стартовые значения шкал
+const THRESHOLD=90;                                 // порог свайпа в пикселях
+let arch=null;                                      // выбранный архетип
+let idx=0;                                          // номер текущей карточки в колоде
+let state={...START};                               // текущие значения шкал
+let busy=false;                                     // true — идёт выбор или рулетка, клики блокируются
+let chooseCurrent=null;                             // функция выбора для текущей карточки (нужна клавишам ← →)
 
-/* ===== SCREENS ===== */
+/* ===================== ЭКРАНЫ ===================== */
+// Показывает экран: делает его видимым, затем запускает плавное появление; остальные скрывает
 function show(id){
  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('show');if(s.id!==id)s.classList.remove('active')});
- const s=$(id);s.classList.add('active');void s.offsetWidth;requestAnimationFrame(()=>s.classList.add('show'));scrollTo(0,0);
+ const s=$(id);s.classList.add('active');
+ void s.offsetWidth;                                // принудительный reflow, чтобы сработала анимация
+ requestAnimationFrame(()=>s.classList.add('show'));
+ scrollTo(0,0);
 }
-function go(id,fn){const cur=document.querySelector('.screen.show');if(cur)cur.classList.remove('show');setTimeout(()=>{fn&&fn();show(id)},cur?350:0)}
+// Переход: гасит текущий экран, через 350 мс выполняет fn (подготовка нового экрана) и показывает новый
+function go(id,fn){
+ const cur=document.querySelector('.screen.show');if(cur)cur.classList.remove('show');
+ setTimeout(()=>{fn&&fn();show(id)},cur?350:0);
+}
 
-/* ===== SCREEN 1 ===== */
+/* ===================== ЭКРАН 1: ВЫБОР АРХЕТИПА ===================== */
+// Строим блоки гильдий и кнопки-архетипы из массива GUILDS
 const gbox=$('guilds');
 GUILDS.forEach(g=>{
  const sec=document.createElement('section');sec.className='guild';sec.style.setProperty('--g',g.rgb);
- sec.innerHTML='<h2></h2><div class="grid"></div>';sec.firstChild.textContent=g.name;
- g.list.forEach(a=>{const b=document.createElement('button');b.className='arch';b.textContent=a;b.onclick=()=>pick(b);sec.lastChild.appendChild(b)});
+ sec.innerHTML='<h2></h2><div class="grid"></div>';
+ sec.firstChild.textContent=g.name;                 // текст через textContent — без риска HTML-вставки
+ g.list.forEach(a=>{
+  const b=document.createElement('button');b.className='arch';b.textContent=a;b.onclick=()=>pick(b);
+  sec.lastChild.appendChild(b);
+ });
  gbox.appendChild(sec);
 });
-const cards=[...document.querySelectorAll('.arch')];
+const cards=[...document.querySelectorAll('.arch')];  // все кнопки архетипов в порядке гильдий
+
+// Фиксирует выбор архетипа и через 800 мс переходит на экран с описанием
 function pick(el){
  if(busy)return;busy=true;
  cards.forEach(c=>c.classList.remove('highlight','selected'));
  el.classList.add('selected');arch=el.textContent;
- setTimeout(()=>go('s2',startQuest),800);
+ setTimeout(()=>go('sInfo',fillInfo),800);
 }
+
+// Рулетка: подсветка бежит по карточкам, шаги замедляются (интервал растёт квадратично, ~2,7 с), последняя подсветка = выбор
 $('rnd').onclick=()=>{
- if(busy)return;busy=true;$('s1').classList.add('locked');
+ if(busy)return;busy=true;$('s1').classList.add('locked');   // на время рулетки клики отключены
  cards.forEach(c=>c.classList.remove('selected'));
- const target=Math.floor(Math.random()*12),N=24,start=(target-(N-1)+120)%12;let i=0,prev;
+ const L=cards.length,N=24;                                  // L — число карточек, N — число шагов
+ const target=Math.floor(Math.random()*L);                   // заранее выбираем результат
+ const start=(((target-(N-1))%L)+L)%L;                       // стартуем так, чтобы после N шагов остановиться на target
+ let i=0,prev=null;
  (function step(){
   if(prev)prev.classList.remove('highlight');
-  const c=cards[(start+i)%12];c.classList.add('highlight');prev=c;
+  const c=cards[(start+i)%L];c.classList.add('highlight');prev=c;
   if(++i<N)setTimeout(step,50+i*i*.35);
   else setTimeout(()=>{c.classList.remove('highlight');busy=false;pick(c)},250);
  })();
 };
 
-/* ===== SCREEN 2 ===== */
-function render(){
- const g=$('mGift'),s=$('mShadow'),o=$('mSource');
- g.querySelector('.fill').style.width=state.gift+'%';g.querySelector('span').textContent=Math.round(state.gift)+'%';
- s.querySelector('.fill').style.width=state.shadow+'%';s.querySelector('span').textContent=Math.round(state.shadow)+'%';
- s.classList.toggle('alarm',state.shadow>70);
- o.querySelector('.dot').style.left=state.source+'%';o.querySelector('span').textContent=Math.round(state.source)+'%';
+/* ===================== ЭКРАН-ПЕРЕХОД: ОПИСАНИЕ АРХЕТИПА ===================== */
+const cap1=t=>t.charAt(0).toUpperCase()+t.slice(1)+'.';   // «мужество…» → «Мужество….»
+// Заполняет экран описания: гильдия, название, текст, Дар и Ловушка архетипа
+function fillInfo(){
+ const g=GUILDS.find(g=>g.list.includes(arch));
+ $('infoGuild').textContent=g.name;
+ $('infoName').textContent=arch;
+ $('infoDesc').replaceChildren(...(archetypeInfo[arch]||[]).map(t=>el('p',t)));   // по абзацу на элемент массива
+ $('infoGift').textContent=cap1(nature[arch][0]);
+ $('infoShadow').textContent=cap1(nature[arch][1]);
+ $('infoCard').style.setProperty('--g',g.rgb);            // цвет полосы = цвет гильдии
+ $('startBtn').disabled=false;
 }
+// «Начать путь» → экран 2 (от двойного нажатия защищаемся блокировкой кнопки)
+$('startBtn').onclick=()=>{
+ const b=$('startBtn');if(b.disabled)return;b.disabled=true;
+ go('s2',startQuest);
+};
+
+/* ===================== ЭКРАН 2: ЛОКАЦИЯ ВЫЗОВА ===================== */
+// Ссылки на элементы шкал берём один раз, чтобы не искать их при каждом обновлении
+const ui={
+ giftFill:$('mGift').querySelector('.fill'),     giftVal:$('mGift').querySelector('span'),
+ shadowBox:$('mShadow'),shadowFill:$('mShadow').querySelector('.fill'),shadowVal:$('mShadow').querySelector('span'),
+ dot:$('mSource').querySelector('.dot'),         srcVal:$('mSource').querySelector('span')
+};
+// Перерисовывает все три шкалы по текущему state
+function render(){
+ ui.giftFill.style.width=state.gift+'%';     ui.giftVal.textContent=Math.round(state.gift)+'%';
+ ui.shadowFill.style.width=state.shadow+'%'; ui.shadowVal.textContent=Math.round(state.shadow)+'%';
+ ui.shadowBox.classList.toggle('alarm',state.shadow>70);     // Тень > 70% — красная и мигает
+ ui.dot.style.left=state.source+'%';         ui.srcVal.textContent=Math.round(state.source)+'%';
+}
+// Начало квеста: сброс шкал и счётчика, подпись с архетипом, первая карточка
 function startQuest(){
  idx=0;state={...START};
  $('path').textContent='Путь Архетипа: '+arch;render();nextCard();
 }
-function applyEffects(e){for(const k in e)state[k]=clamp(state[k]+e[k]);render()}
+// Применяет эффекты выбора к шкалам (с ограничением 0–100); неизвестные ключи игнорируем
+function applyEffects(e){
+ for(const k in e)if(k in state)state[k]=clamp(state[k]+e[k]);
+ render();
+}
+// Короткая подпись кнопки: поле short, а если его нет — первые два слова полного текста
+const shortLabel=o=>o.short||o.label.split(/\s+/).slice(0,2).join(' ');
+
+// Показывает следующую карточку; если колода закончилась — переходит к итогу
 function nextCard(){
- const zone=$('zone'),deck=questDecks[arch]||[];zone.innerHTML='';
- if(idx>=deck.length){setTimeout(()=>go('s3',finish),300);return}
- const d=deck[idx];$('cnt').textContent='Карточка '+(idx+1)+' из '+deck.length;
+ const zone=$('zone'),deck=questDecks[arch]||[];
+ zone.innerHTML='';
+ if(idx>=deck.length){
+  if(!deck.length)console.warn('Пустая колода для архетипа:',arch);
+  $('qcap').textContent='';setTimeout(()=>go('s3',finish),300);return;
+ }
+ const d=deck[idx];
+ $('cnt').textContent='Карточка '+(idx+1)+' из '+deck.length;
+ const nxt=deck[idx+1];if(nxt&&nxt.image)new Image().src=nxt.image;   // заранее грузим картинку следующей карточки
+
  const c=document.createElement('div');c.className='swcard';
- c.innerHTML='<div class="pic"></div><div class="full"></div><div class="hint hl"></div><div class="hint hr"></div>';
- const sh=o=>o.short||o.label.split(/\s+/).slice(0,2).join(" ");
- c.querySelector(".hl").textContent=sh(d.left);c.querySelector(".hr").textContent=sh(d.right);
- if(d.image)c.querySelector('.pic').style.backgroundImage='url("'+d.image+'")';
- const cap=$('qcap');cap.style.opacity=0;setTimeout(()=>{cap.textContent=d.text;cap.style.opacity=1},idx?250:0);
+ c.innerHTML='<div class="pic"></div><div class="full"></div><div class="hint hl" role="button"></div><div class="hint hr" role="button"></div>';
+ c.querySelector('.hl').textContent=shortLabel(d.left);
+ c.querySelector('.hr').textContent=shortLabel(d.right);
+ if(d.image)c.querySelector('.pic').style.backgroundImage='url("'+d.image.replace(/"/g,'%22')+'")';
+
+ // Текст вопроса над карточкой: плавно гасим и показываем новый
+ const cap=$('qcap');cap.style.opacity=0;
+ setTimeout(()=>{cap.textContent=d.text;cap.style.opacity=1},idx?250:0);
+
+ // Появление карточки: из прозрачной и чуть уменьшенной (два rAF — чтобы браузер успел применить стартовые стили)
  c.style.opacity=0;c.style.transform='scale(.94)';zone.appendChild(c);
  requestAnimationFrame(()=>requestAnimationFrame(()=>{c.style.opacity=1;c.style.transform=''}));
  attachSwipe(c,d);
 }
+
+// Вся логика управления карточкой: перетаскивание мышью и пальцем, тап по кнопкам, полный текст выбора
 function attachSwipe(c,d){
- let sx=0,dx=0,on=false,done=false;let tapSide=null;const hl=c.querySelector('.hl'),hr=c.querySelector('.hr'),full=c.querySelector('.full');let ptype='',preview=null;
- const showFull=sd=>{full.textContent=(sd==='l'?d.left:d.right).label;full.classList.add('show')};
- const hideFull=()=>{full.classList.remove('show');preview=null};
- [[hl,'l'],[hr,'r']].forEach(([el,sd])=>{el.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&!on)showFull(sd)});el.addEventListener('pointerleave',()=>{if(!on)hideFull()})});
- c.addEventListener('pointerdown',e=>{if(done)return;const h=e.target.closest('.hint');tapSide=h?(h.classList.contains('hl')?'l':'r'):null;ptype=e.pointerType;on=true;sx=e.clientX;dx=0;c.classList.add('drag');c.setPointerCapture(e.pointerId)},{passive:true});
- c.addEventListener('pointermove',e=>{
-  if(!on)return;dx=e.clientX-sx;
-  c.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;
-  const k=Math.min(Math.abs(dx)/90,1);
-  hl.style.opacity=dx<0?1:1-.5*k;hr.style.opacity=dx>0?1:1-.5*k;hl.classList.toggle('on',dx<0&&k>=1);hr.classList.toggle('on',dx>0&&k>=1);
-  if(k>.35)showFull(dx<0?'l':'r');else hideFull();
- },{passive:true});
- const end=()=>{
-  if(!on)return;on=false;c.classList.remove('drag');
-  const tap=tapSide&&Math.abs(dx)<=6;
-  if(tap&&ptype!=='mouse'&&preview!==tapSide){showFull(tapSide);preview=tapSide;c.style.transform='';return}
-  if(Math.abs(dx)>90||tap){
-   done=true;const left=tap?tapSide==='l':dx<0;
-   c.style.transform=`translateX(${left?-600:600}px) rotate(${left?-30:30}deg)`;c.style.opacity=0;
-   applyEffects((left?d.left:d.right).effects);idx++;setTimeout(nextCard,320);
-  }else{c.style.transform='';hl.style.opacity=hr.style.opacity='';hl.classList.remove('on');hr.classList.remove('on');hideFull()}
+ const hl=c.querySelector('.hl'),hr=c.querySelector('.hr'),full=c.querySelector('.full');
+ let sx=0,dx=0;          // sx — x начала касания, dx — текущее смещение
+ let on=false;           // идёт перетаскивание
+ let done=false;         // выбор уже сделан, карточка улетает
+ let tapSide=null;       // 'l'/'r', если касание началось на кнопке
+ let ptype='';           // тип указателя: mouse / touch / pen
+ let preview=null;       // сторона, чей полный текст уже показан по первому касанию (для сенсорных экранов)
+ let shown=null;         // сторона, текст которой сейчас на затемнении (чтобы не перерисовывать зря)
+
+ // Затемнение с полным текстом выбранной стороны
+ const showFull=side=>{
+  if(shown===side)return;shown=side;
+  full.textContent=(side==='l'?d.left:d.right).label;full.classList.add('show');
  };
- c.addEventListener('pointerup',end,{passive:true});c.addEventListener('pointercancel',end,{passive:true});
+ const hideFull=()=>{shown=null;preview=null;full.classList.remove('show')};
+
+ // Выбор стороны: карточка улетает, эффекты применяются, через 320 мс — следующая карточка
+ const choose=left=>{
+  if(done)return;done=true;chooseCurrent=null;
+  c.classList.remove('drag');
+  c.style.transform=`translateX(${left?-600:600}px) rotate(${left?-30:30}deg)`;c.style.opacity=0;
+  applyEffects((left?d.left:d.right).effects);
+  idx++;setTimeout(nextCard,320);
+ };
+ chooseCurrent=choose;   // тот же выбор доступен с клавиатуры
+
+ // Возврат карточки в центр, если порог не достигнут
+ const snapBack=()=>{
+  c.style.transform='';hl.style.opacity=hr.style.opacity='';
+  hl.classList.remove('on');hr.classList.remove('on');hideFull();
+ };
+
+ // Наведение мыши на кнопку показывает полный текст (на сенсорных наведения нет)
+ [[hl,'l'],[hr,'r']].forEach(([el,side])=>{
+  el.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&!on)showFull(side)});
+  el.addEventListener('pointerleave',()=>{if(!on)hideFull()});
+ });
+
+ // Начало касания / нажатия
+ c.addEventListener('pointerdown',e=>{
+  if(done)return;
+  const h=e.target.closest('.hint');
+  tapSide=h?(h.classList.contains('hl')?'l':'r'):null;
+  ptype=e.pointerType;on=true;sx=e.clientX;dx=0;
+  c.classList.add('drag');                 // на время перетаскивания отключаем CSS-переход
+  c.setPointerCapture(e.pointerId);        // получаем события, даже если палец/мышь ушли за карточку
+ });
+
+ // Перетаскивание: сдвиг и поворот карточки, подсветка кнопок, полный текст после ~1/3 порога
+ c.addEventListener('pointermove',e=>{
+  if(!on)return;
+  dx=e.clientX-sx;
+  c.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;
+  const k=Math.min(Math.abs(dx)/THRESHOLD,1);   // 0…1 — насколько близко к порогу
+  hl.style.opacity=dx<0?1:1-.5*k;hr.style.opacity=dx>0?1:1-.5*k;
+  hl.classList.toggle('on',dx<0&&k>=1);hr.classList.toggle('on',dx>0&&k>=1);
+  if(k>.35)showFull(dx<0?'l':'r');else hideFull();
+ });
+
+ // Конец жесте; cancelled=true, если браузер забрал жест (например, началась вертикальная прокрутка)
+ const end=cancelled=>{
+  if(!on)return;on=false;c.classList.remove('drag');
+  const tap=!cancelled&&tapSide&&Math.abs(dx)<=6;         // почти без движения по кнопке = тап
+  // Сенсорный экран: первый тап по кнопке только показывает полный текст, второй подтверждает выбор
+  if(tap&&ptype!=='mouse'&&preview!==tapSide){showFull(tapSide);preview=tapSide;c.style.transform='';return}
+  if(!cancelled&&(Math.abs(dx)>THRESHOLD||tap))choose(tap?tapSide==='l':dx<0);
+  else snapBack();
+ };
+ c.addEventListener('pointerup',()=>end(false));
+ c.addEventListener('pointercancel',()=>end(true));
 }
 
-/* ===== SCREEN 3 ===== */
+// Клавиатура: ← выбирает левый вариант, → правый (удобно на компьютере и для доступности)
+document.addEventListener('keydown',e=>{
+ if(!chooseCurrent||!$('s2').classList.contains('show'))return;
+ if(e.key==='ArrowLeft')chooseCurrent(true);
+ else if(e.key==='ArrowRight')chooseCurrent(false);
+});
+
+/* ===================== ЭКРАН 3: ИТОГ ===================== */
+// Описания архетипов для экрана между выбором и квестом. Три абзаца: суть, проявление в обществе, вызов и путь.
+// Каждый абзац — отдельная строка массива; чтобы добавить или убрать абзац, правьте массив.
+const archetypeInfo={
+"Простодушный":[
+"Простодушный верит, что мир в основе своей добр, и ищет в нём простое счастье: тепло, честность, ощущение дома. Он умеет радоваться малому и не усложнять там, где можно просто быть.",
+"В обществе он создаёт атмосферу доверия и оптимизма: рядом с ним людям легче выдохнуть. Его сила — искренность, а его вера нередко возвращает другим надежду.",
+"Вызов — не закрывать глаза на то, что причиняет боль, и вовремя прислушиваться к интуиции. Путь — сохранить доверие к жизни, добавив к нему зрелость и ясный взгляд."],
+"Искатель":[
+"Искатель — тот, кого зовёт неизвестное. Ему важно быть собой, а не соответствовать ожиданиям, поэтому он идёт туда, где можно открыть новые смыслы, места и знания.",
+"В обществе он приносит свежий взгляд, смелость выходить за рамки и вдохновляет других на перемены. Его сила — любопытство, самостоятельность и способность начинать заново.",
+"Вызов — постоянная неудовлетворённость и страх остановиться, чтобы не упустить что-то важное. Путь — понять, что дом можно находить и в движении, и в близости с людьми."],
+"Мудрец":[
+"Мудрец ищет истину и стремится понять, как устроены люди, мир и он сам. Он опирается на знания, наблюдение и спокойное размышление.",
+"В обществе он становится советчиком и тем, кто помогает увидеть ситуацию глубже и отделить главное от шума. Его сила — ясность мысли и умение слушать.",
+"Вызов — уйти в бесконечные размышления и остаться наблюдателем. Путь — превращать знание в живое участие и помнить, что простые радости тоже несут смысл."],
+"Герой":[
+"Герой берёт на себя трудное и доказывает делом, что способен изменить обстоятельства. Он действует, берёт ответственность и не отступает перед препятствиями.",
+"В обществе он тот, кто защищает, ведёт за собой и показывает пример мужества. Его сила — воля, дисциплина и готовность идти вперёд, когда другим страшно.",
+"Вызов — видеть в каждой ситуации бой и измерять ценность победой. Путь — научиться силе, которая умеет договариваться, просить поддержки и признавать пределы."],
+"Бунтарь":[
+"Бунтарь видит, что не работает, и не готов с этим мириться. Он нарушает правила, которые потеряли смысл, и открывает дорогу переменам.",
+"В обществе он тот, кто задаёт неудобные вопросы и не даёт застыть привычному порядку. Его сила — смелость, независимость и способность вдохновлять на обновление.",
+"Вызов — разрушать ради самого разрушения и отвергать всё, что исходит от других. Путь — направить энергию протеста на создание нового, не теряя связи с людьми."],
+"Маг":[
+"Маг чувствует скрытые связи между людьми, событиями и смыслами. Он верит, что реальность можно менять, начиная с внутреннего преображения.",
+"В обществе он катализатор: помогает увидеть новые возможности и превращает идеи в изменения. Его сила — интуиция, воображение и умение соединять несоединимое.",
+"Вызов — соблазн влиять скрыто и манипулировать другими. Путь — использовать силу открыто и бережно, помогая людям раскрыть собственную власть над своей жизнью."],
+"Творец":[
+"Творец воплощает то, что рождается внутри: образы, идеи, формы. Для него важно создать нечто настоящее и оставить в мире свой отпечаток.",
+"В обществе он делает невидимое видимым и даёт людям новые способы смотреть на привычное. Его сила — воображение, мастерство и вера в замысел.",
+"Вызов — перфекционизм и страх показать неидеальное. Путь — позволить работе быть живой, делиться ею и принимать обратную связь без потери собственного голоса."],
+"Правитель":[
+"Правитель создаёт порядок, в котором людям можно жить и работать. Он берёт ответственность за целое и заботится о том, чтобы система была устойчивой.",
+"В обществе он организует, объединяет и принимает решения. Его сила — видение, надёжность и умение выстраивать структуры, которые держатся.",
+"Вызов — контроль и страх потерять влияние. Путь — править так, чтобы в порядке оставалось место живому, а власть была способом служить общему благу."],
+"Заботливый":[
+"Заботливый чувствует нужды других и откликается на них: поддерживает, защищает, помогает. Забота для него — способ выражать любовь и ответственность.",
+"В обществе он тот, на кого можно опереться. Его сила — щедрость, сострадание и умение создавать вокруг себя безопасное пространство.",
+"Вызов — забыть о себе и копить усталость и скрытые обиды. Путь — заботиться о людях и о себе одинаково честно и принимать помощь без чувства вины."],
+"Славный малый":[
+"Славный малый ценит равенство, искренность и человеческую простоту. Ему важно быть своим среди людей и принимать их такими, какие они есть.",
+"В обществе он соединяет: умеет найти общий язык, поддержать и сделать так, чтобы каждый почувствовал свою принадлежность. Его сила — тепло и надёжность.",
+"Вызов — подстраиваться, чтобы не остаться вне группы, и приглушать собственное мнение. Путь — оставаться своим для других, не переставая быть собой."],
+"Влюбленный":[
+"Влюблённый живёт через близость, красоту и чувство. Ему важно быть по-настоящему вовлечённым — в людей, дело и мир вокруг.",
+"В обществе он приносит тепло и глубину связей, помогает людям чувствовать себя ценными. Его сила — страсть, преданность и умение видеть красоту.",
+"Вызов — зависеть от одобрения и терять себя в отношениях. Путь — любить других, оставаясь в контакте со своими желаниями и границами."],
+"Шут":[
+"Шут видит жизнь с лёгкостью и умеет превращать напряжение в смех. Он напоминает, что игра и радость так же важны, как серьёзность.",
+"В обществе он снимает напряжение, сближает людей и говорит вслух то, о чём все молчат. Его сила — находчивость, живость и умение смотреть на вещи иначе.",
+"Вызов — прятаться за шуткой от серьёзных чувств. Путь — позволять себе быть и лёгким, и глубоким и использовать юмор как мост к людям, а не как защиту."]};
+// Для итогового текста: [Дар, Ловушка] каждого архетипа
 const nature={
 "Герой":["мужество и воля преодолевать трудности","стремление побеждать любой ценой и доказывать свою силу"],
 "Бунтарь":["смелость разрушать отжившее и начинать новое","разрушение ради разрушения и отказ от любых правил"],
@@ -262,19 +498,34 @@ const nature={
 "Простодушный":["вера, оптимизм и способность видеть хорошее","наивность и отрицание неприятной реальности"],
 "Искатель":["жажда открытий и независимость мышления","вечная неудовлетворённость и бегство от привязанностей"],
 "Мудрец":["стремление к истине и способность к глубокому анализу","отстранённость и бесконечное обдумывание вместо действия"]};
+// Собирает итоговый текст по финальным значениям шкал
 function summary(){
  const {gift,shadow,source}=state,[gf,sh]=nature[arch];
+ // Текст про Дар по уровню шкалы (>=70 / 40–69 / <40)
  const gl=gift>=70?"вы уверенно опираетесь на этот ресурс":gift>=40?"этот ресурс проявляется, но ему есть куда расти":"этот ресурс пока в тени и ждёт вашего внимания";
- const sl=shadow>70?"Тень сейчас сильна: ей нужны осознанность и бережное внимание, а не борьба":shadow>=35?"Тень заметна, и с ней можно вести диалог":"Тень спокойна, и вы хорошо её чувствуете";
+ // Текст про Тень (>70 / 35–70 / <35)
+ const sl=shadow>70?"Вы в ловушке: осознайте ее и возвращайтесь к балансу":shadow>=35?"Ловушка архетипа рядом, но с ней можно вести диалог":"Вы хорошо чувствуете роль этого архетипа, его ловушки и дары";
+ // Текст про баланс Общность/Независимость (<40 / >60 / середина)
  const al=source<40?"Вы склонны смещать фокус на Общность, порой рискуя раствориться в интересах других и потерять собственную аутентичность.":source>60?"Вы держите курс на жесткую Независимость и эгоцентризм, что дает свободу, но может создавать барьеры для истинной синергии в социуме.":"Вы демонстрируете прекрасный внутренний баланс между личными границами и ценностью общего блага.";
- return [`Путь архетипа «${arch}». Ваш Дар — ${gf} (${Math.round(gift)}%): ${gl}. Ваша Тень — ${sh} (${Math.round(shadow)}%). ${sl}.`,al];
+ // Два абзаца итога: про Дар и Тень архетипа, затем про Источник
+ return [`Путь архетипа «${arch}». Ваш Дар — ${gf} (${Math.round(gift)}%): ${gl}. Ваша Ловушка — ${sh} (${Math.round(shadow)}%). ${sl}.`,al];
 }
+// Создаёт элемент с текстом (textContent — безопасно)
+const el=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;return n};
+// Заполняет итоговый экран: абзацы итога и три вопроса для саморефлексии
 function finish(){
- $('rev').innerHTML='';summary().forEach(t=>{const p=document.createElement('p');p.textContent=t;$('rev').appendChild(p)});
- $('qs').innerHTML='';(coachingQuestions[arch]||[]).forEach(q=>{const li=document.createElement('li');li.textContent=q;$('qs').appendChild(li)});
+ $('rev').replaceChildren(...summary().map(t=>el('p',t)));
+ $('qs').replaceChildren(...(coachingQuestions[arch]||[]).map(q=>el('li',q)));
 }
-$('again').onclick=()=>go('s1',()=>{busy=false;arch=null;state={...START};$('s1').classList.remove('locked');cards.forEach(c=>c.classList.remove('highlight','selected'))});
-show('s1');
+// Возврат на экран 1 со сбросом всего состояния («Пройти заново» и «Выбрать другой архетип»)
+const restart=()=>go('s1',()=>{
+ busy=false;arch=null;chooseCurrent=null;state={...START};
+ $('s1').classList.remove('locked');
+ cards.forEach(c=>c.classList.remove('highlight','selected'));
+});
+$('again').onclick=restart;     // с итогового экрана
+$('backBtn').onclick=restart;   // с экрана описания: выбрать другой архетип
+show('s1');   // старт игры: показываем экран выбора архетипа
 </script>
 </body>
 </html>
