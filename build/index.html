@@ -79,6 +79,12 @@ h1{font-size:26px;line-height:1.2;margin:8px 0 6px;text-align:center}
 #infoGuild{margin-bottom:0}#infoName{margin-bottom:14px}
 .gt+.gt{margin-top:12px}.gt b{display:block;margin-bottom:2px}.gt p{margin:0}
 .btn.ghost{background:transparent;color:var(--ac);box-shadow:inset 0 0 0 2px var(--ac);margin-top:10px}
+/* Экран-инструкция: список шагов с иконками */
+.steps{list-style:none;margin:0;padding:0}
+.steps li{display:flex;gap:12px;align-items:flex-start}
+.steps li+li{margin-top:14px}
+.steps .ic{flex:none;width:40px;height:40px;border-radius:12px;background:rgba(0,119,255,.12);display:flex;align-items:center;justify-content:center;font-size:21px}
+.steps p{margin:0}
 /* Отключаем анимации, если пользователь просит их уменьшить */
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -89,7 +95,7 @@ h1{font-size:26px;line-height:1.2;margin:8px 0 6px;text-align:center}
  <!-- ЭКРАН 1: выбор архетипа (гильдии строятся из JS в #guilds) -->
 <section class="screen" id="s1">
   <h1>Общество: Новые смыслы</h1>
-  <p class="sub">Выберите свой архетип или доверьтесь случаю, чтобы начать путь</p>
+  <p class="sub">Выберите архетип или доверьтесь случаю, чтобы начать путь</p>
   <button class="btn" id="rnd">Случайный выбор</button>
   <div id="guilds"></div>
  </section>
@@ -102,8 +108,23 @@ h1{font-size:26px;line-height:1.2;margin:8px 0 6px;text-align:center}
    <div class="gt"><b>🌟 Дар</b><p id="infoGift"></p></div>
    <div class="gt"><b>Ловушка</b><p id="infoShadow"></p></div>
   </div>
-  <button class="btn" id="startBtn">Начать путь</button>
+  <button class="btn" id="startBtn">Далее</button>
   <button class="btn ghost" id="backBtn">Выбрать другой архетип</button>
+ </section>
+ <!-- ЭКРАН-ПЕРЕХОД: короткая инструкция, как проходить квест -->
+ <section class="screen" id="sHow">
+  <h1>Как проходить квест</h1>
+  <p class="sub">Это займёт меньше минуты</p>
+  <div class="review">
+   <ul class="steps">
+    <li><span class="ic">🃏</span><p><b>Читайте ситуацию.</b> Вам будут показываться карточки по одной: вопрос стоит над картинкой.</p></li>
+    <li><span class="ic">👆</span><p><b>Выбирайте ответ.</b> Смахните карточку влево или вправо либо нажмите кнопку с вариантом. Полный текст варианта появится на картинке при наведении или первом касании.</p></li>
+    <li><span class="ic">⚖️</span><p><b>Следите за шкалами.</b> Ваши решения двигают Дар, Ловушки архетипа и баланс между Общностью и Независимостью.</p></li>
+    <li><span class="ic">🌱</span><p><b>Выбирайте по ощущению.</b> Здесь нет правильных и неправильных ответов: можно доверять тому, что откликается.</p></li>
+   </ul>
+  </div>
+  <button class="btn" id="goBtn">Начать квест</button>
+  <button class="btn ghost" id="howBack">Назад</button>
  </section>
  <!-- ЭКРАН 2: локация вызова — шкалы, вопрос и карточка со свайпом -->
 <section class="screen" id="s2">
@@ -233,9 +254,11 @@ function show(id){
  scrollTo(0,0);
 }
 // Переход: гасит текущий экран, через 350 мс выполняет fn (подготовка нового экрана) и показывает новый
+let going=false;   // true, пока идёт переход между экранами: повторные нажатия игнорируются
 function go(id,fn){
+ if(going)return;going=true;
  const cur=document.querySelector('.screen.show');if(cur)cur.classList.remove('show');
- setTimeout(()=>{fn&&fn();show(id)},cur?350:0);
+ setTimeout(()=>{fn&&fn();show(id);going=false},cur?350:0);
 }
 
 /* ===================== ЭКРАН 1: ВЫБОР АРХЕТИПА ===================== */
@@ -288,13 +311,11 @@ function fillInfo(){
  $('infoGift').textContent=cap1(nature[arch][0]);
  $('infoShadow').textContent=cap1(nature[arch][1]);
  $('infoCard').style.setProperty('--g',g.rgb);            // цвет полосы = цвет гильдии
- $('startBtn').disabled=false;
 }
-// «Начать путь» → экран 2 (от двойного нажатия защищаемся блокировкой кнопки)
-$('startBtn').onclick=()=>{
- const b=$('startBtn');if(b.disabled)return;b.disabled=true;
- go('s2',startQuest);
-};
+// «Далее» → экран с инструкцией; «Начать квест» → экран 2; «Назад» → снова описание архетипа
+$('startBtn').onclick=()=>go('sHow');
+$('goBtn').onclick=()=>go('s2',startQuest);
+$('howBack').onclick=()=>go('sInfo');
 
 /* ===================== ЭКРАН 2: ЛОКАЦИЯ ВЫЗОВА ===================== */
 // Ссылки на элементы шкал берём один раз, чтобы не искать их при каждом обновлении
